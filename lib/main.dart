@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 void main() {
   runApp(Application());
 }
@@ -36,7 +36,7 @@ class _ApplicationState extends State<Application>
   Widget build(BuildContext context) {
     return MaterialApp(
       // Title merupakan nama dari aplikasi kita
-      title: "Praktikum 02",
+      title: "Praktikum Mobile - Flutter",
       theme: _isDarkMode ? darkTheme : lightTheme,
       // Halaman pertama yang akan terbuka saat aplikasi dijalankan/ di compile
       home: Scaffold(
@@ -53,7 +53,7 @@ class _ApplicationState extends State<Application>
           controller: _tabController,
           children: [
             HomeScreen(),
-            SecondTab(),
+            ProfileScreen(),
           ],
         ),
         bottomNavigationBar: TabBar(
@@ -77,8 +77,8 @@ class _ApplicationState extends State<Application>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.settings),
-                  Text('Settings'),
+                  Icon(Icons.person),
+                  Text('Profile'),
                 ],
               ),
             ),
@@ -115,7 +115,7 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
   ),
 );
 
-class HomeScreen extends StatelessWidget {
+class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -139,89 +139,271 @@ class HomeScreen extends StatelessWidget {
           leading: Icon(Icons.person),
           title: Text("Nama"),
           subtitle: Text("Neuvilette"),
+          trailing: Icon(Icons.edit),
         ),
         ListTile(
           leading: Icon(Icons.email),
           title: Text("Email"),
           subtitle: Text("Neuvilette@Gmail.com"),
+          trailing: Icon(Icons.edit),
         ),
         ListTile(
           leading: Icon(Icons.confirmation_number),
           title: Text("NIM"),
           subtitle: Text("20200801177"),
+          trailing: Icon(Icons.edit),
         ),
       ],
     );
   }
 }
 
-class SecondTab extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AnotherPage()),
-              );
-            },
-            child: Text('Go to Another Page'),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              _launchPhone();
-            },
-            child: Text('Open Phone'),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              _launchBrowser();
-            },
-            child: Text('Open Web Browser'),
-          ),
-        ],
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 20.0,
+          mainAxisSpacing: 20.0,
+          children: [
+            buildCard(
+              context,
+              'Persegi',
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SisiPersegiScreen()),
+                );
+              },
+            ),
+            buildCard(
+              context,
+              'Persegi Panjang',
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SisiPersegiPanjangScreen(),
+                  ),
+                );
+              },
+            ),
+            buildCard(
+              context,
+              'Bangun Segitiga',
+              () {
+                // Add onTap logic for third button
+              },
+            ),
+            buildCard(
+              context,
+              'Bangun Lingkaran',
+              () {
+                // Add onTap logic for fourth button
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // Function to launch phone
-  void _launchPhone() async {
-    const url = 'tel:+1234567890'; // Change to your phone number
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  // Function to launch web browser
-  void _launchBrowser() async {
-    const url = 'https://www.example.com'; // Change to your URL
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+  Widget buildCard(
+    BuildContext context,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      color: Colors.red,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 20),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
+class SisiPersegiScreen extends StatefulWidget {
+  const SisiPersegiScreen({super.key});
 
+  @override
+  State<SisiPersegiScreen> createState() => _SisiPersegiScreenState();
+}
 
-class AnotherPage extends StatelessWidget {
+class _SisiPersegiScreenState extends State<SisiPersegiScreen> {
+  int sisi = 0;
+  int value = 0;
+  bool isCalculated = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Another Page'),
+        title: Text('Persegi'),
       ),
       body: Center(
-        child: Text('This is another page'),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ListTile(
+                title: Text("Masukan Nilai Sisi Persegi"),
+                subtitle: TextField(
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    if (!isCalculated) {
+                      sisi = int.parse(value);
+                    } else {
+                      value = '';
+                    }
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Nilai Luas: $value'),
+              ),
+              SizedBox(height: 10),
+              !isCalculated
+                  ? ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          value = sisi * sisi;
+                          isCalculated = true;
+                          print(value);
+                        });
+                      },
+                      child: Text('Calculate'),
+                    )
+                  : SizedBox.shrink(),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    value = 0;
+                    sisi = 0;
+                    isCalculated = false;
+                    print(value);
+                    print(sisi);
+                  });
+                },
+                child: Text('Reset'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SisiPersegiPanjangScreen extends StatefulWidget {
+  const SisiPersegiPanjangScreen({super.key});
+
+  @override
+  State<SisiPersegiPanjangScreen> createState() =>
+      _SisiPersegiPanjangScreenState();
+}
+
+class _SisiPersegiPanjangScreenState extends State<SisiPersegiPanjangScreen> {
+  int panjang = 0;
+  int lebar = 0;
+  int value = 0;
+  bool isCalculated = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Persegi Panjang'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ListTile(
+                title: Text("Masukan Nilai Panjang"),
+                subtitle: TextField(
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    if (!isCalculated) {
+                      panjang = int.parse(value);
+                    } else {
+                      value = '';
+                    }
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text("Masukan Nilai Lebar"),
+                subtitle: TextField(
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    if (!isCalculated) {
+                      lebar = int.parse(value);
+                    } else {
+                      value = '';
+                    }
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Nilai Luas: $value'),
+              ),
+              SizedBox(height: 10),
+              !isCalculated
+                  ? ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          value = panjang * lebar;
+                          isCalculated = true;
+                          print(value);
+                        });
+                      },
+                      child: Text('Calculate'),
+                    )
+                  : SizedBox.shrink(),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    value = 0;
+                    panjang = 0;
+                    lebar = 0;
+                    isCalculated = false;
+                    print(value);
+                    print(panjang);
+                    print(lebar);
+                  });
+                },
+                child: Text('Reset'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
