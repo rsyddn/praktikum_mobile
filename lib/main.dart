@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:praktikum_mobile/location_utils.dart';
 
 void main() {
   runApp(Application());
@@ -203,6 +204,19 @@ class HomeScreen extends StatelessWidget {
               'Bangun Lingkaran',
               () {
                 // Add onTap logic for fourth button
+              },
+            ),
+            buildCard(
+              context,
+              'Get Location',
+              () async {
+                LocationUtils utils = LocationUtils();
+                final result = await utils.streamLocation();
+                result?.listen((event) {
+                  print("Latitude: ${event.latitude}");
+                  print("Longitude: ${event.longitude}");
+                });
+                result?.drain();
               },
             ),
           ],
